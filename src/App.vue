@@ -8,10 +8,11 @@
 
 <style lang="scss">
 #app {
-  width: 100%;
+  width: 100vw;
   font-family: 'Montserrat', sans-serif;
   background: #f7f3eb;
-  height: 100vh;
+  min-height: 100vh;
+  overflow-y: hidden;
 }
 body {
   margin: 0 auto;

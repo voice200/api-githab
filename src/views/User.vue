@@ -1,27 +1,32 @@
 <template>
   <div class="user">
+    <Workflow/>
   </div>
 </template>
 <script>
+
+import Workflow from "@/components/Workflow";
 export default {
-name: "User"
+name: "User",
+  components: { Workflow },
 }
 </script>
 
 <style scoped lang="scss">
 .user{
-  background: gray;
+  border:1px solid gray;
 }
-@media screen and (max-width: 1023px) {
+@media screen and (max-width: 1199px) {
   .user{
-    width: 100%;
+    //width: 100%;
     height: 100%;
     margin: 0;
+    padding: 50px;
   }
 }
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 1200px) {
   .user{
-    width: 1024px;
+    width: 1200px;
     height: 100%;
     margin: 0 auto;
   }
