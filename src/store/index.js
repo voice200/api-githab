@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import auth from '@/store/auth';
+import common from '@/store/common';
+import user from '@/store/user';
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
-  actions: {},
-  modules: {}
+  modules: {
+    common,
+    auth,
+    user
+  }
 })
