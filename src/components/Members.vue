@@ -1,14 +1,11 @@
 <template>
   <div class="members"></div>
-
 </template>
 
 <script>
 export default {
-name: "Members"
+  name: 'Members'
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

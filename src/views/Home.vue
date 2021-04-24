@@ -1,28 +1,27 @@
 <template>
   <div>
-    <FormLogin/>
+    <FormLogin />
   </div>
 </template>
 
 <script>
 // import { getToken, getUser} from "@/request";
 
-import FormLogin from "@/components/FormLogin";
+import FormLogin from '@/components/FormLogin'
 export default {
   name: 'Home',
   components: { FormLogin },
-  data () {
-    return {
-    }
+  data() {
+    return {}
   },
   created() {
-    if ( !localStorage.getItem('access_token') ){
+    if (!localStorage.getItem('access_token')) {
       this.$store.dispatch('setStateUrl', this.$route.query.state ?? null)
       this.$store.dispatch('setCode', this.$route.query.code ?? null)
-      this.$store.dispatch('loginFromGithub').then(()=>{
+      this.$store.dispatch('loginFromGithub').then(() => {
         const user = this.$store.getters.getUserLocal
-        if (user){
-          this.$router.push(`/user/${ user?.id }`)
+        if (user) {
+          this.$router.push(`/user/${user?.id}`)
         }
       })
     }

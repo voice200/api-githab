@@ -1,18 +1,16 @@
 <template>
-<div class="member-item" ></div>
+  <div class="member-item"></div>
 </template>
 
 <script>
 export default {
-name: "MemberItem",
-  data () {
-  return {
-    branch: ''
-  }
+  name: 'MemberItem',
+  data() {
+    return {
+      branch: ''
+    }
   }
 }
 </script>
 
-<style scoped  lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

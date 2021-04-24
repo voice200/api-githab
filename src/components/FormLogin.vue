@@ -1,38 +1,39 @@
 <template>
-<div class="form-login form-login__position">
-  <div class="form-login_title">
-    To use the application, you need to log in through Github
-  </div>
-  <img class="form-login_img" :src="gitHubImg" alt="gitHubImg">
+  <div class="form-login form-login__position">
+    <div class="form-login_title">
+      To use the application, you need to log in through Github
+    </div>
+    <img class="form-login_img" :src="gitHubImg" alt="gitHubImg" />
 
-  <div class="form-login_button" @click="loginGitHub">Authorization</div>
-</div>
+    <div class="form-login_button" @click="loginGitHub">Authorization</div>
+  </div>
 </template>
 
 <script>
-import { getAuth } from "@/request";
+import { getAuth } from '@/request'
 
 export default {
-  name: "FormLogin",
-  data () {
+  name: 'FormLogin',
+  data() {
     return {
-      gitHubImg: 'https://www.pngkey.com/png/full/178-1787134_png-file-svg-github-icon-png.png'
+      gitHubImg:
+        'https://www.pngkey.com/png/full/178-1787134_png-file-svg-github-icon-png.png'
     }
   },
-  methods:{
-    loginGitHub () {
+  methods: {
+    loginGitHub() {
       getAuth()
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
-.form-login{
+.form-login {
   width: 800px;
   height: 600px;
   background: white;
-  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   padding: 40px;
   box-sizing: border-box;
@@ -41,20 +42,19 @@ export default {
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
-  &__position{
+  &__position {
     margin-top: 10%;
     margin-left: auto;
     margin-right: auto;
   }
-  &_title{
-
+  &_title {
   }
-  &_img{
+  &_img {
     width: 50%;
     object-fit: contain;
     object-position: center;
   }
-  &_button{
+  &_button {
     width: 200px;
     height: 50px;
     background: #fcce0d;
@@ -66,22 +66,21 @@ export default {
     border-radius: 10px;
     align-self: center;
     cursor: pointer;
-    &:hover{
+    &:hover {
       background: #e9ba13;
     }
   }
 }
 @media screen and (max-width: 1023px) {
-  .form-login{
+  .form-login {
     width: 100%;
     height: 100%;
   }
 }
 @media screen and (min-width: 1024px) {
-  .form-login{
+  .form-login {
     width: 800px;
     height: 600px;
   }
 }
-
 </style>

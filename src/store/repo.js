@@ -1,7 +1,7 @@
-import { getBranches, getRepo} from "@/request";
-import { formatDate } from "@/utils/utils";
+import { getBranches, getRepo } from '@/request'
+import { formatDate } from '@/utils/utils'
 export default {
-  state : {
+  state: {
     search: {
       dateStart: null,
       dateEnd: null,
@@ -14,16 +14,16 @@ export default {
     repository: {},
     pullRequests: {
       active: [],
-      done: [],
+      done: []
     }
   },
   mutations: {
-    setSearch (state, payload) {
+    setSearch(state, payload) {
       console.log('payload', payload)
-      state.search = {...state.search, ...payload}
+      state.search = { ...state.search, ...payload }
       console.log('state.search', state.search)
     },
-    setBranches(state, payload){
+    setBranches(state, payload) {
       state.branches = payload
     },
     setRepository(state, payload) {
@@ -31,54 +31,50 @@ export default {
     }
   },
   actions: {
-    setSearch ({commit}, payload) {
+    setSearch({ commit }, payload) {
       commit('setSearch', payload)
     },
-    async setBranches ({commit}) {
+    async setBranches({ commit }) {
       commit('clearError')
       commit('setLoading', true)
-      const {owner, repo} = this.state.repo.search
-      const {accessToken: token} = this.state.user.user
-       try {
-         const branches = await getBranches(owner, repo, token)
-         commit('setBranches', branches)
-         commit('setLoading', false)
-       }
-       catch ( e ) {
-         commit('setLoading', false)
-         commit('setError', e.message)
-       }
+      const { owner, repo } = this.state.repo.search
+      const { accessToken: token } = this.state.user.user
+      try {
+        const branches = await getBranches(owner, repo, token)
+        commit('setBranches', branches)
+        commit('setLoading', false)
+      } catch (e) {
+        commit('setLoading', false)
+        commit('setError', e.message)
+      }
     },
-    async setRepository ({commit}) {
+    async setRepository({ commit }) {
       commit('clearError')
       commit('setLoading', true)
-      const {owner, repo} = this.state.repo.search
-      const {accessToken: token} = this.state.user.user
+      const { owner, repo } = this.state.repo.search
+      const { accessToken: token } = this.state.user.user
       try {
         const repository = await getRepo(owner, repo, token)
         commit('setRepository', repository)
         commit('setLoading', false)
-        const date = new Date
+        const date = new Date()
         console.log('date', date)
         commit('setSearch', {
           dateStart: formatDate(repository.created_at),
-          dateEnd: formatDate()})
-      }
-      catch ( e ) {
+          dateEnd: formatDate()
+        })
+      } catch (e) {
         commit('setLoading', false)
         commit('setError', e.message)
       }
     }
-
-
   },
   getters: {
-    getBranches (state){
+    getBranches(state) {
       return state.branches
     },
-    getSearch(state){
+    getSearch(state) {
       return state.search
     }
-
   }
 }
