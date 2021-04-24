@@ -1,10 +1,10 @@
 <template>
 <div>
-  <select @change="changeBranch('test')"  :disabled="!getDisable">
-<!--    <option selected>{{ defaultValue }}</option>-->
+  <select :disabled="!getDisable" v-model="branch" @change="changeBranch(branch)">
+    <option selected v-if="!getDisable">{{ defaultValue }}</option>
     <option
-      @change="changeBranch(item.name)"
       :selected="item.name === 'master'"
+      :value="item.name"
       v-for="(item, i) in items"
             :key="i">{{ item.name }}</option>
   </select>
@@ -12,31 +12,24 @@
 </template>
 
 <script>
+import { handlerEvent } from "@/handlerEvent";
 export default {
   props: {
     items: {type: Array},
     defaultValue: {type: String},
-    data () {
-      return {
-        branch: null
-      }
-    }
   },
-name: "AppSelect",
   data () {
     return {
+      branch: 'master'
     }
   },
   methods: {
     changeBranch(branch){
       this.$store.dispatch('setSearch', {branch})
-      console.log('меняю ветку')
+      handlerEvent.$emit('choicedone')
     }
   },
   computed : {
-    // getBranches () {
-    //   return this.items.filter(item => item.name !== 'master')
-    // },
     getDisable() {
       return this.items.length
     }

@@ -1,4 +1,5 @@
 import { getBranches, getRepo} from "@/request";
+import { formatDate } from "@/utils/utils";
 export default {
   state : {
     search: {
@@ -57,6 +58,11 @@ export default {
         const repository = await getRepo(owner, repo, token)
         commit('setRepository', repository)
         commit('setLoading', false)
+        const date = new Date
+        console.log('date', date)
+        commit('setSearch', {
+          dateStart: formatDate(repository.created_at),
+          dateEnd: formatDate()})
       }
       catch ( e ) {
         commit('setLoading', false)
@@ -69,6 +75,9 @@ export default {
   getters: {
     getBranches (state){
       return state.branches
+    },
+    getSearch(state){
+      return state.search
     }
 
   }
