@@ -32,7 +32,10 @@ export default {
   },
   methods: {
     changeBranch(branch) {
-      this.$store.dispatch('setSearch', { branch })
+      this.$store.dispatch('setSearch', { branch }).then(()=>{
+        this.$store.dispatch('setPulls')
+        this.$store.dispatch('setCommits')
+      })
       handlerEvent.$emit('choicedone')
     }
   },

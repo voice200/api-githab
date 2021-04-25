@@ -50,9 +50,7 @@ export const getUser = async (token) => {
     console.error('e', e)
   }
 }
-//https://api.github.com/repos/voice200/vue-test-task
 export const getRepo = async (owner, repo, token) => {
-  console.log('token', token)
   const url = `http://localhost:8080/api/repos/${owner}/${repo}`
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
@@ -71,7 +69,6 @@ export const getRepo = async (owner, repo, token) => {
 }
 export const getBranches = async (owner, repo, token) => {
   const url = `http://localhost:8080/api/repos/${owner}/${repo}/branches`
-  console.log('token', token)
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
   headers.append('Accept', 'application/json')
@@ -87,4 +84,38 @@ export const getBranches = async (owner, repo, token) => {
     console.log(e.message)
   }
 }
-//https://api.github.com/repos/voice200/excel/commits
+export const getPulls = async (owner, repo, token) => {
+  const url = `http://localhost:8080/api/repos/${owner}/${repo}/pulls?state=all`
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('Accept', 'application/json')
+  headers.append('Authorization', `Bearer ${token}`)
+  const requestOptions = {
+    method: 'GET',
+    headers: headers
+  }
+  try {
+    const response = await fetch(url, requestOptions)
+    return response.json()
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+export const getCommits = async (owner, repo, token, branch) => {
+  const url = `http://localhost:8080/api/repos/${owner}/${repo}/commits?sha=${branch}`
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('Accept', 'application/json')
+  headers.append('Authorization', `Bearer ${token}`)
+  const requestOptions = {
+    method: 'GET',
+    headers: headers
+  }
+  try {
+    const response = await fetch(url, requestOptions)
+    return response.json()
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+//https://api.github.com/repos/voice200/api-github/commits?sha=added-components-structure

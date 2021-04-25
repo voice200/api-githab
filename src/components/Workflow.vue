@@ -90,6 +90,28 @@
     >
       Choose
     </button>
+    <div class="workflow_result">
+      <div>Result</div>
+      <div>Members</div>
+      <Members/>
+      <div class="workflow_pulls">
+        <div>
+          <div>Active PR: {{ getActivePR.length }}</div>
+          <button @click="changeVisible('showActive')" v-if="getActivePR.length">{{ !this.showActive ? 'More' : 'Hide' }}</button>
+          <list-pulls title="Active PR" :pulls="getActivePR" v-show="showActive"/>
+        </div>
+        <div>
+          <div>Closed PR: {{ getClosedPR.length }} </div>
+          <button @click="changeVisible('showClosed')" v-if="getClosedPR.length">{{ !this.showClosed ? 'More' : 'Hide' }}</button>
+          <list-pulls title="Closed PR" :pulls="getClosedPR" v-show="showClosed"/>
+        </div>
+        <div>
+          <div>Old PR: {{ getOldPR.length }}</div>
+          <button @click="changeVisible('showOld')" v-if="getOldPR.length">{{ !this.showOld ? 'More' : 'Hide' }}</button>
+          <list-pulls title="Old PR" :pulls="getOldPR" v-show="showOld" :old="true"/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -98,10 +120,12 @@ import InputAutocomplete from '@/components/InputAutocomplete'
 import AppSelect from '@/components/AppSelect'
 import { handlerEvent } from '@/handlerEvent'
 import { formatDate, getCalendar } from '@/utils/utils'
+import Members from "@/components/Members";
+import ListPulls from "@/components/listPulls";
 
 export default {
   name: 'workflow',
-  components: { AppSelect, InputAutocomplete },
+  components: { ListPulls, Members, AppSelect, InputAutocomplete },
   data() {
     return {
       disable: false,
@@ -118,7 +142,10 @@ export default {
       },
       dayItems: getCalendar('day'),
       monthItems: getCalendar('month'),
-      yearItems: getCalendar('year')
+      yearItems: getCalendar('year'),
+      showActive: false,
+      showClosed: false,
+      showOld: false,
     }
   },
   computed: {
@@ -127,6 +154,15 @@ export default {
     },
     getSearch() {
       return this.$store.getters.getSearch
+    },
+    getActivePR() {
+      return this.$store.getters.getActivePR
+    },
+    getOldPR() {
+      return this.$store.getters.getOldPR
+    },
+    getClosedPR() {
+      return this.$store.getters.getClosedPR
     }
   },
   methods: {
@@ -134,9 +170,11 @@ export default {
       this.disable = value
       console.log('disable', this.disable)
     },
+    changeVisible(value) {
+      this[value] = !this[value]
+    },
     getData() {
       this.$store.dispatch('setRepository').then(() => {
-        this.$store.dispatch('setBranches')
         const { dateStart, dateEnd } = this.$store.getters.getSearch
         this.dateStartUser.year = new Date(dateStart).getFullYear()
         this.dateStartUser.month = +new Date(dateStart).getMonth() + 1
@@ -144,6 +182,8 @@ export default {
         this.dateEndUser.year = new Date(dateEnd).getFullYear()
         this.dateEndUser.month = +new Date(dateEnd).getMonth() + 1
         this.dateEndUser.day = new Date(dateEnd).getDate()
+        this.$store.dispatch('setBranches').then(()=>{
+        })
       })
     },
     getAllDataSearch() {
@@ -172,6 +212,7 @@ export default {
           this.dateEndUser.year = new Date(dateEnd).getFullYear()
           this.dateEndUser.month = +new Date(dateEnd).getMonth() + 1
           this.dateEndUser.day = new Date(dateEnd).getDate()
+          this.$store.dispatch('setPulls')
         })
     }
   },
