@@ -4,12 +4,21 @@
   <div class="list-pull_head">
     <div>Name</div>
     <div>Date Create</div>
-    <div>Author</div>
+    <div v-if="!old">Author</div>
+    <select @change="useFilter" v-if="old" v-model="useAuthor">
+      <option value="author" selected>Author</option>
+      <option
+               :value="item.author"
+               v-for="(item, i) in authors"
+               :key="i">
+        {{ item.author }}
+      </option>
+    </select>
     <div v-if="old">Days Open</div>
     <div>Go to githab</div>
   </div>
   <div class="list-pull_item"
-  v-for="(pull, i) in getPull"
+  v-for="(pull, i) in !filter ? getPull : getPullWithAuthor(useAuthor)"
   :key="i">
     <div>{{ pull.title }}</div>
     <div>{{ formatDatePull(pull.created_at) }}</div>
@@ -17,13 +26,13 @@
     <div v-if="old">{{ formatDay(pull.created_at) }}</div>
     <a :href="pull.html_url" target="_blank">Go to githab</a>
   </div>
-  <PaginationBlock :pages="getPages" :changePage="changePage"/>
+  <PaginationBlock :pages="getPages" :changePage="changePage" v-if="!filter"/>
 
 </div>
 </template>
 
 <script>
-import { formatDate } from '@/utils/utils'
+import { formatDate, unique } from "@/utils/utils";
 import PaginationBlock from "@/components/PaginationBlock";
 export default {
   components: { PaginationBlock },
@@ -46,8 +55,10 @@ export default {
         startPage: 1,
         endPage: 0,
         currentPage: 1,
-      }
-
+      },
+      authors: [],
+      filter: false,
+      useAuthor: 'author'
     }
   },
   computed: {
@@ -61,7 +72,16 @@ export default {
     },
     getPull (){
       return this.pulls.slice((this.pagination.currentPage - 1) * this.pagination.elementsItem, this.pagination.currentPage * this.pagination.elementsItem)
+    },
+    getPullWithAuthor() {
+      return value =>{
+        return this.pulls.filter(item => item.user.login === value)
+      }
+    },
+    prepareAuthorsList (){
+      return unique(this.pulls.map(item => ({author: item.user.login})))
     }
+
   },
   methods:{
     formatDay(value){
@@ -69,8 +89,13 @@ export default {
       if ( day < 1 ){
         return 1
       } else {
-        return value.toFixed(0)
+        return day.toFixed(0)
       }
+    },
+    useFilter(){
+      if ( this.useAuthor === 'author' ){
+        this.filter = false
+      } else this.filter = true
     },
     changePage(value){
       if ( value === 'next' ){
@@ -92,6 +117,8 @@ export default {
   },
   updated() {
     this.pagination.endPage = this.getPages
+    this.authors = this.prepareAuthorsList
+    console.log('this.authors', this.authors)
   }
 };
 </script>

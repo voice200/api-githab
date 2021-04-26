@@ -1,87 +1,92 @@
 <template>
   <div class="workflow_container">
+    <div class="workflow_title">Workflow</div>
     <InputAutocomplete :changeDisable="changeDisable" />
-    <button class="workflow_button" @click="getData">Use It</button>
+    <button class="workflow_button" @click="getData" :disabled="disable">Use It</button>
     <AppSelect :items="getBranches" defaultValue="master" />
-    Choose Interval
-    <div class="date-interval">
-      <div class="date-start">
-        <select
-          name="dayStart"
-          id="dayStart"
-          :disabled="!getBranches.length"
-          v-model="dateStartUser.day"
-        >
-          <option v-for="(day, i) in dayItems" :key="i" :value="day">
-            {{ day }}
-          </option>
-        </select>
-        <select
-          name="monthStart"
-          id="monthStart"
-          :disabled="!getBranches.length"
-          v-model="dateStartUser.month"
-        >
-          <option
-            :disabled="month < new Date(getSearch.dateStart).getMonth()"
-            v-for="(month, i) in monthItems"
-            :key="i"
-            :value="month"
+    <div class="workflow_interval">
+      <div class="workflow_interval_title">Choose Interval:</div>
+      <div class="date-interval">
+        <div class="date-start">
+          <select
+            name="dayStart"
+            id="dayStart"
+            :disabled="!getBranches.length"
+            v-model="dateStartUser.day"
           >
-            {{ month }}
-          </option>
-        </select>
-        <select
-          name="yearStart"
-          id="yearStart"
-          :disabled="!getBranches.length"
-          v-model="dateStartUser.year"
-        >
-          <option v-for="(year, i) in yearItems" :key="i" :value="year">
-            {{ year }}
-          </option>
-        </select>
+            <option v-for="(day, i) in dayItems" :key="i" :value="day">
+              {{ day }}
+            </option>
+          </select>
+          <select
+            name="monthStart"
+            id="monthStart"
+            :disabled="!getBranches.length"
+            v-model="dateStartUser.month"
+          >
+            <option
+              :disabled="month < new Date(getSearch.dateStart).getMonth()"
+              v-for="(month, i) in monthItems"
+              :key="i"
+              :value="month"
+            >
+              {{ month }}
+            </option>
+          </select>
+          <select
+            class="year"
+            name="yearStart"
+            id="yearStart"
+            :disabled="!getBranches.length"
+            v-model="dateStartUser.year"
+          >
+            <option v-for="(year, i) in yearItems" :key="i" :value="year">
+              {{ year }}
+            </option>
+          </select>
+        </div>
+        <div class="date-end">
+          <select
+            name="dayEnd"
+            id="dayEnd"
+            :disabled="!getBranches.length"
+            v-model="dateEndUser.day"
+          >
+            <option v-for="(day, i) in dayItems" :key="i" :value="day">
+              {{ day }}
+            </option>
+          </select>
+          <select
+            name="monthEnd"
+            id="monthEnd"
+            :disabled="!getBranches.length"
+            v-model="dateEndUser.month"
+          >
+            <option v-for="(month, i) in monthItems" :key="i" :value="month">
+              {{ month }}
+            </option>
+          </select>
+          <select
+            name="yearEnd"
+            class="year"
+            id="yearEnd"
+            :disabled="!getBranches.length"
+            v-model="dateEndUser.year"
+          >
+            <option v-for="(year, i) in yearItems" :key="i" :value="year">
+              {{ year }}
+            </option>
+          </select>
+        </div>
       </div>
-      <div class="date-end">
-        <select
-          name="dayEnd"
-          id="dayEnd"
-          :disabled="!getBranches.length"
-          v-model="dateEndUser.day"
-        >
-          <option v-for="(day, i) in dayItems" :key="i" :value="day">
-            {{ day }}
-          </option>
-        </select>
-        <select
-          name="monthEnd"
-          id="monthEnd"
-          :disabled="!getBranches.length"
-          v-model="dateEndUser.month"
-        >
-          <option v-for="(month, i) in monthItems" :key="i" :value="month">
-            {{ month }}
-          </option>
-        </select>
-        <select
-          name="yearEnd"
-          id="yearEnd"
-          :disabled="!getBranches.length"
-          v-model="dateEndUser.year"
-        >
-          <option v-for="(year, i) in yearItems" :key="i" :value="year">
-            {{ year }}
-          </option>
-        </select>
-      </div>
-      <button
-        class="workflow_button"
-        :disabled="!getBranches.length"
-        @click="changeDate"
-      >
-        Save Date
-      </button>
     </div>
+    <button
+      class="workflow_button"
+      :disabled="!getBranches.length"
+      @click="changeDate"
+    >
+      Save Date
+    </button>
     <hr />
     <button
       class="workflow_button"
@@ -90,15 +95,15 @@
     >
       Choose
     </button>
-    <div class="workflow_result">
-      <div>Result</div>
+    <div class="workflow_result" v-if="result">
+      <div class="workflow_result_title">Result</div>
       <div>Members</div>
       <Members/>
       <div class="workflow_pulls">
         <div>
           <div>Active PR: {{ getActivePR.length }}</div>
           <button @click="changeVisible('showActive')" v-if="getActivePR.length">{{ !this.showActive ? 'More' : 'Hide' }}</button>
-          <list-pulls title="Active PR" :pulls="getActivePR" v-show="showActive"/>
+          <list-pulls title="Active PR" :pulls="getActivePR" v-show="showActive" :old="true"/>
         </div>
         <div>
           <div>Closed PR: {{ getClosedPR.length }} </div>
@@ -128,7 +133,7 @@ export default {
   components: { ListPulls, Members, AppSelect, InputAutocomplete },
   data() {
     return {
-      disable: false,
+      disable: true,
       disableAllData: true,
       dateStartUser: {
         day: '',
@@ -140,6 +145,7 @@ export default {
         month: '',
         year: ''
       },
+      result: false,
       dayItems: getCalendar('day'),
       monthItems: getCalendar('month'),
       yearItems: getCalendar('year'),
@@ -168,7 +174,7 @@ export default {
   methods: {
     changeDisable(value) {
       this.disable = value
-      console.log('disable', this.disable)
+      console.log('disable', value)
     },
     changeVisible(value) {
       this[value] = !this[value]
@@ -184,10 +190,12 @@ export default {
         this.dateEndUser.day = new Date(dateEnd).getDate()
         this.$store.dispatch('setBranches').then(()=>{
         })
+      }).catch(()=>{
+          console.log('нет данных')
       })
     },
     getAllDataSearch() {
-      console.log('получить дату')
+      this.result = true
     },
     disableButton() {
       this.disableAllData = false
@@ -213,6 +221,7 @@ export default {
           this.dateEndUser.month = +new Date(dateEnd).getMonth() + 1
           this.dateEndUser.day = new Date(dateEnd).getDate()
           this.$store.dispatch('setPulls')
+          this.$store.dispatch('setCommits')
         })
     }
   },
@@ -224,10 +233,67 @@ export default {
 
 <style scoped lang="scss">
 .workflow {
+  &_interval{
+    display: flex;
+    width: 100%;
+    margin-bottom: 30px;
+    &_title{
+      margin-right: 30px;
+      font-size: 20px;
+    }
+    select{
+      width: 50px;
+      height: 30px;
+      margin-right: 10px;
+    }
+    .year{
+      width: 100px;
+    }
+  }
+  .data-start{
+    margin-bottom: 20px;
+  }
   &_container {
+    padding: 50px;
+    background: #f7f3eb;
   }
   &_button {
     width: 200px;
+    height: 40px;
+    background: #fcce0d;
+    color: black;
+    text-align: center;
+    font-size: 20px;
+    line-height: 40px;
+    font-weight: 800;
+    border-radius: 10px;
+    align-self: center;
+    cursor: pointer;
+    &:hover{
+      background: #d9b219;
+    }
+    margin-bottom: 20px;
+  }
+  .center{
+    align-self: center;
+  }
+  &_title{
+    font-size: 25px;
+    font-weight: 900;
+    margin-bottom: 40px;
+    width: 100%;
+    text-align: center;
+    color: #ff5400;
+  }
+  &_result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &_title{
+      font-size: 25px;
+      font-weight: bold;
+      margin-bottom: 40px;
+    }
   }
 }
 </style>

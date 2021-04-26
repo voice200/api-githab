@@ -72,7 +72,6 @@ export default {
       const { accessToken: token } = this.state.user.user
       try {
         const repository = await getRepo(owner, repo, token)
-        console.log('repository', repository)
         commit('setRepository', repository)
         commit('setLoading', false)
         commit('setSearch', {
@@ -91,7 +90,9 @@ export default {
       const { accessToken: token } = this.state.user.user
       try {
         const commits = await getCommits(owner, repo, token, branch)
-        commit('setCommits', commits)
+        commit('setCommits', commits.filter(({commit:{author: {date}}}) =>
+          (new Date(formatDate(date)) >= new Date(this.state.repo.search.dateStart) &&
+          new Date(formatDate(date)) <= new Date(this.state.repo.search.dateEnd))))
         commit('setLoading', false)
       } catch (e) {
         commit('setLoading', false)
@@ -108,8 +109,8 @@ export default {
         commit('setPullsActive', pulls.filter(item => (
           item.head.ref === branch &&
           item.state === 'open' &&
-          new Date(item.created_at) >= new Date(this.state.repo.search.dateStart) &&
-          new Date(item.created_at) <= new Date(this.state.repo.search.dateEnd))))
+          new Date(formatDate(item.created_at)) >= new Date(this.state.repo.search.dateStart) &&
+          new Date(formatDate(item.created_at)) <= new Date(this.state.repo.search.dateEnd))))
         commit('setPullsClosed', pulls.filter(item => (
           item.head.ref === branch &&
           item.state === 'closed' &&

@@ -1,6 +1,8 @@
 <template>
-  <div>
+  <div class="app-select">
+    <div class="title">Choose Branch:</div>
     <select
+      class="select"
       :disabled="!getDisable"
       v-model="branch"
       @change="changeBranch(branch)"
@@ -47,4 +49,21 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.app-select{
+  display: flex;
+  margin-top: 30px;
+  align-items: center;
+  margin-bottom: 50px;
+  .select{
+    width: 400px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .title{
+    font-size: 20px;
+    margin-right: 30px;
+  }
+}
+
+</style>

@@ -118,4 +118,54 @@ export const getCommits = async (owner, repo, token, branch) => {
     console.log(e.message)
   }
 }
-//https://api.github.com/repos/voice200/api-github/commits?sha=added-components-structure
+export const getRepos = async (owner, token) => {
+  const url = `http://localhost:8080/api/users/${owner}/repos`
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('Accept', 'application/json')
+  headers.append('Authorization', `Bearer ${token}`)
+  const requestOptions = {
+    method: 'GET',
+    headers: headers
+  }
+  try {
+    const response = await fetch(url, requestOptions)
+    return response.json()
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+export const getUsers = async (token) => {
+  const url = `http://localhost:8080/api/users`
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('Accept', 'application/json')
+  headers.append('Authorization', `Bearer ${token}`)
+  const requestOptions = {
+    method: 'GET',
+    headers: headers
+  }
+  try {
+    const response = await fetch(url, requestOptions)
+    return response.json()
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+export const getOrganizations = async (token) => {
+  const url = `http://localhost:8080/api/organizations`
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  headers.append('Accept', 'application/json')
+  headers.append('Authorization', `Bearer ${token}`)
+  const requestOptions = {
+    method: 'GET',
+    headers: headers
+  }
+  try {
+    const response = await fetch(url, requestOptions)
+    return response.json()
+  } catch (e) {
+    console.log(e.message)
+  }
+}

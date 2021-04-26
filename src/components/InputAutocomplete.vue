@@ -3,7 +3,7 @@
     <label class="autocomplete_label" for="url"
       >Enter the full path to the repository as
       'https://github.com/owner/repository' or in the format “user/repository”
-      or “org/repository”</label
+      or “org/repository”:</label
     >
     <input id="url" type="text" v-model="url" @input="checkUrl(url)" />
   </div>
@@ -23,7 +23,7 @@ export default {
         owner: null,
         repo: null
       },
-      regExpLink: /^(https:\/\/github.com\/[\w+\d+\-&.]*\/[\w+\d+\-&.]*)/gim,
+      regExpLink: /^(https:\/\/github.com\/[\w+\d+\-&.]*\/[\w+\d+\-&.]*)/gmi,
       regExpUrl: /(^[\w+\d+\-&.]*\/+[\w+\d+\-&.]*)+$/gim,
       isValid: false
     }
@@ -32,17 +32,24 @@ export default {
     checkUrl(url) {
       if (url) {
         const link = this.isLink(url)
-        if (link && this.regExpLink.test(url)) {
-          const newUrl = url.split('/')
-          this.request.repo = newUrl[newUrl.length - 1]
-          this.$store.dispatch('setSearch', {
-            owner: newUrl[newUrl.length - 2],
-            repo: newUrl[newUrl.length - 1]
-          })
-          this.request.owner = newUrl[newUrl.length - 2]
-          this.isValid = true
-          this.changeDisable(true)
-        }
+          console.log('link', link)
+          console.log('this.regExpLink.test(url)', this.regExpLink.test(url))
+        console.log('condition',link && this.regExpLink.test(url))
+          if ( this.regExpLink.test(url) && link){
+            console.log('link захожу')
+            const newUrl = url.split('/')
+            this.request.repo = newUrl[newUrl.length - 1]
+            this.$store.dispatch('setSearch', {
+              owner: newUrl[newUrl.length - 2],
+              repo: newUrl[newUrl.length - 1]
+            })
+            this.request.owner = newUrl[newUrl.length - 2]
+            this.isValid = true
+            this.changeDisable(false)
+          }else {
+            this.isValid = false
+            this.changeDisable(true)
+          }
         if (!link && this.checkRegExp) {
           let [owner, repo] = url.split('/')
           this.request.owner = owner
@@ -53,17 +60,15 @@ export default {
               repo
             })
             this.isValid = true
+            this.changeDisable(false)
+          }else {
+            this.isValid = false
             this.changeDisable(true)
           }
-          this.isValid = false
-          this.changeDisable(false)
-        } else {
-          this.isValid = false
-          this.changeDisable(false)
         }
       } else {
         this.isValid = false
-        this.changeDisable(false)
+        this.changeDisable(true)
       }
     },
     isLink(url) {
@@ -89,10 +94,19 @@ export default {
   display: flex;
   flex-direction: column;
   &_label {
-    font-size: 13px;
+    font-size: 14px;
+    margin-bottom: 15px;
   }
   input {
-    width: 400px;
+    width: 100%;
+    align-self: center;
+    height: 30px;
+    outline: none;
+    font-size: 20px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+
   }
 }
 </style>

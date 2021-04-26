@@ -38,7 +38,7 @@ export const getCalendar = (value) => {
 export const unique = (arr, fieldName) => {
   const result = [];
   arr.forEach((item) => {
-    if (!result.find((acc) => acc[fieldName] === item[fieldName])) {
+    if (!result.find((res) => res[fieldName] === item[fieldName])) {
       result.push(item);
     }
   });
