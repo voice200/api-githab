@@ -1,10 +1,9 @@
 <template>
   <div id="app">
-    <Navbar/>
+    <Navbar />
     <router-view />
   </div>
 </template>
-
 
 <style lang="scss">
 #app {
@@ -18,10 +17,14 @@ body {
   margin: 0 auto;
   padding: 0;
 }
+.disable-button {
+  opacity: 0.6;
+  pointer-events: none;
+}
 </style>
 <script>
-import Navbar from "@/components/Navbar";
+import Navbar from '@/components/Navbar'
 export default {
   components: { Navbar }
-};
+}
 </script>
