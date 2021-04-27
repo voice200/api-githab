@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     changeBranch(branch) {
-      this.$store.dispatch('setSearch', { branch }).then(()=>{
+      this.$store.dispatch('setSearch', { branch }).then(() => {
         this.$store.dispatch('setPulls')
         this.$store.dispatch('setCommits')
       })
@@ -48,20 +48,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.app-select{
+.app-select {
   display: flex;
   margin-top: 30px;
   align-items: center;
   margin-bottom: 50px;
-  .select{
+  .select {
     width: 400px;
     height: 40px;
     font-size: 20px;
   }
-  .title{
+  .title {
     font-size: 20px;
     margin-right: 30px;
   }
 }
-
 </style>

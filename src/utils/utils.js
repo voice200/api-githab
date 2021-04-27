@@ -6,7 +6,7 @@ export const getRandomString = () => {
   )
   return binaryStringItems.reduce((acc, item) => `${acc}${item}`, '')
 }
-export const formatDate = (date = null, local='En-en') => {
+export const formatDate = (date = null, local = 'En-en') => {
   if (date) {
     return new Date(date).toLocaleString(local).split(',')[0]
   } else {
@@ -36,11 +36,11 @@ export const getCalendar = (value) => {
   }
 }
 export const unique = (arr, fieldName) => {
-  const result = [];
+  const result = []
   arr.forEach((item) => {
     if (!result.find((res) => res[fieldName] === item[fieldName])) {
-      result.push(item);
+      result.push(item)
     }
-  });
-  return result;
-};
+  })
+  return result
+}

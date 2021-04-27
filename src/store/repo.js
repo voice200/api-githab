@@ -1,4 +1,12 @@
-import { getBranches, getPulls, getRepo, getCommits, getUsers, getOrganizations, getRepos } from "@/request";
+import {
+  getBranches,
+  getPulls,
+  getRepo,
+  getCommits,
+  getUsers,
+  getOrganizations,
+  getRepos
+} from '@/request'
 import { formatDate } from '@/utils/utils'
 export default {
   state: {
@@ -15,9 +23,9 @@ export default {
     pullRequests: {
       active: [],
       closed: [],
-      old:[]
+      old: []
     },
-    users:[],
+    users: [],
     repositories: []
   },
   mutations: {
@@ -48,7 +56,7 @@ export default {
     setUsers(state, payload) {
       state.users = payload
     },
-    clearState(state){
+    clearState(state) {
       state.search = {
         dateStart: null,
         dateEnd: null,
@@ -61,8 +69,8 @@ export default {
       state.repository = {}
       state.pullRequests = {
         active: [],
-          closed: [],
-          old:[]
+        closed: [],
+        old: []
       }
       state.users = []
       state.repositories = []
@@ -96,9 +104,9 @@ export default {
       const { accessToken: token } = this.state.user.user
       try {
         const repository = await getRepo(owner, repo, token)
-        if ( repository.message === 'Not Found' ){
-          console.log('error', repository.message )
-        }else {
+        if (repository.message === 'Not Found') {
+          console.log('error', repository.message)
+        } else {
           commit('setRepository', repository)
           commit('setLoading', false)
           commit('setSearch', {
@@ -111,7 +119,7 @@ export default {
         commit('setError', e.message)
       }
     },
-    async setAutocomplete({commit}){
+    async setAutocomplete({ commit }) {
       commit('clearError')
       commit('setLoading', true)
       const { accessToken: token } = this.state.user.user
@@ -119,23 +127,27 @@ export default {
         const users = await getUsers(token)
         const organizations = await getOrganizations(token)
 
-        commit('setUsers', [...users.map(item => item.login), ...organizations.map(item => item.login)])
-      }
-      catch ( e ) {
+        commit('setUsers', [
+          ...users.map((item) => item.login),
+          ...organizations.map((item) => item.login)
+        ])
+      } catch (e) {
         commit('setLoading', false)
         commit('setError', e.message)
       }
     },
-    async setRepos({commit}){
+    async setRepos({ commit }) {
       commit('clearError')
       commit('setLoading', true)
       const { owner } = this.state.repo.search
       const { accessToken: token } = this.state.user.user
       try {
-        const repositories = await getRepos(owner,token)
-        commit('setRepositories', repositories.map(item => item.name))
-      }
-      catch ( e ) {
+        const repositories = await getRepos(owner, token)
+        commit(
+          'setRepositories',
+          repositories.map((item) => item.name)
+        )
+      } catch (e) {
         commit('setLoading', false)
         commit('setError', e.message)
       }
@@ -147,34 +159,63 @@ export default {
       const { accessToken: token } = this.state.user.user
       try {
         const commits = await getCommits(owner, repo, token, branch)
-        commit('setCommits', commits.filter(({commit:{author: {date}}}) =>
-          (new Date(formatDate(date)) >= new Date(this.state.repo.search.dateStart) &&
-          new Date(formatDate(date)) <= new Date(this.state.repo.search.dateEnd))))
+        commit(
+          'setCommits',
+          commits.filter(
+            ({
+              commit: {
+                author: { date }
+              }
+            }) =>
+              new Date(formatDate(date)) >=
+                new Date(this.state.repo.search.dateStart) &&
+              new Date(formatDate(date)) <=
+                new Date(this.state.repo.search.dateEnd)
+          )
+        )
         commit('setLoading', false)
       } catch (e) {
         commit('setLoading', false)
         commit('setError', e.message)
       }
     },
-    async setPulls({commit}) {
+    async setPulls({ commit }) {
       commit('clearError')
       commit('setLoading', true)
       const { owner, repo, branch } = this.state.repo.search
       const { accessToken: token } = this.state.user.user
       try {
         const pulls = await getPulls(owner, repo, token)
-        commit('setPullsActive', pulls.filter(item => (
-          item.head.ref === branch &&
-          item.state === 'open' &&
-          new Date(formatDate(item.created_at)) >= new Date(this.state.repo.search.dateStart) &&
-          new Date(formatDate(item.created_at)) <= new Date(this.state.repo.search.dateEnd))))
-        commit('setPullsClosed', pulls.filter(item => (
-          item.head.ref === branch &&
-          item.state === 'closed' &&
-          new Date(item.created_at) >= new Date(this.state.repo.search.dateStart) &&
-          new Date(item.created_at) <= new Date(this.state.repo.search.dateEnd))))
-        commit('setPullsOld', this.state.repo.pullRequests.active.filter(item =>
-          ((new Date() - new Date(item.created_at))/8.64e+7) >=30))
+        commit(
+          'setPullsActive',
+          pulls.filter(
+            (item) =>
+              item.head.ref === branch &&
+              item.state === 'open' &&
+              new Date(formatDate(item.created_at)) >=
+                new Date(this.state.repo.search.dateStart) &&
+              new Date(formatDate(item.created_at)) <=
+                new Date(this.state.repo.search.dateEnd)
+          )
+        )
+        commit(
+          'setPullsClosed',
+          pulls.filter(
+            (item) =>
+              item.head.ref === branch &&
+              item.state === 'closed' &&
+              new Date(item.created_at) >=
+                new Date(this.state.repo.search.dateStart) &&
+              new Date(item.created_at) <=
+                new Date(this.state.repo.search.dateEnd)
+          )
+        )
+        commit(
+          'setPullsOld',
+          this.state.repo.pullRequests.active.filter(
+            (item) => (new Date() - new Date(item.created_at)) / 8.64e7 >= 30
+          )
+        )
         commit('setLoading', false)
       } catch (e) {
         commit('setLoading', false)

@@ -1,40 +1,43 @@
 <template>
-<div class="list-pull">
-  <div class="list-pull_head">
-    <div>Name</div>
-    <div>Date Create</div>
-    <div v-if="!old">Author</div>
+  <div class="list-pull">
+    <div class="list-pull_head">
+      <div>Name</div>
+      <div>Date Create</div>
+      <div v-if="!old">Author</div>
       <select @change="useFilter" class="author" v-if="old" v-model="useAuthor">
         <option value="author" selected>Author</option>
-        <option
-          :value="item.author"
-          v-for="(item, i) in authors"
-          :key="i">
+        <option :value="item.author" v-for="(item, i) in authors" :key="i">
           {{ item.author }}
         </option>
       </select>
-    <div v-if="old">Days Open</div>
-    <div>Go To Githab</div>
-  </div>
-  <div class="list-pull_item"
-  v-for="(pull, i) in !filter ? getPull : getPullWithAuthor(useAuthor)"
-  :key="i">
-    <div>{{ pull.title }}</div>
-    <div>{{ formatDatePull(pull.created_at) }}</div>
-    <div>{{ pull.user.login }}</div>
-    <div v-if="old">{{ formatDay(pull.created_at) }}</div>
-    <div>
-      <a class="list-pull_button" :href="pull.html_url" target="_blank">Go</a>
+      <div v-if="old">Days Open</div>
+      <div>Go To Githab</div>
     </div>
+    <div
+      class="list-pull_item"
+      v-for="(pull, i) in !filter ? getPull : getPullWithAuthor(useAuthor)"
+      :key="i"
+    >
+      <div>{{ pull.title }}</div>
+      <div>{{ formatDatePull(pull.created_at) }}</div>
+      <div>{{ pull.user.login }}</div>
+      <div v-if="old">{{ formatDay(pull.created_at) }}</div>
+      <div>
+        <a class="list-pull_button" :href="pull.html_url" target="_blank">Go</a>
+      </div>
+    </div>
+    <PaginationBlock
+      :pages="getPages"
+      :changePage="changePage"
+      v-if="!filter"
+      :currentPage="pagination.currentPage"
+    />
   </div>
-  <PaginationBlock :pages="getPages" :changePage="changePage" v-if="!filter" :currentPage="pagination.currentPage"/>
-
-</div>
 </template>
 
 <script>
-import { formatDate, unique } from "@/utils/utils";
-import PaginationBlock from "@/components/PaginationBlock";
+import { formatDate, unique } from '@/utils/utils'
+import PaginationBlock from '@/components/PaginationBlock'
 export default {
   components: { PaginationBlock },
   props: {
@@ -44,18 +47,18 @@ export default {
     pulls: {
       type: Array
     },
-    old:{
+    old: {
       type: Boolean
     }
   },
-  name: "listPulls",
-  data () {
+  name: 'listPulls',
+  data() {
     return {
-      pagination:{
+      pagination: {
         elementsItem: 25,
         startPage: 1,
         endPage: 0,
-        currentPage: 1,
+        currentPage: 1
       },
       authors: [],
       filter: false,
@@ -63,55 +66,57 @@ export default {
     }
   },
   computed: {
-    formatDatePull(){
-      return date =>{
+    formatDatePull() {
+      return (date) => {
         return formatDate(date, 'Ru-ru')
       }
     },
-    getPages () {
+    getPages() {
       return Math.ceil(this.pulls.length / this.pagination.elementsItem)
     },
-    getPull (){
-      return this.pulls.slice((this.pagination.currentPage - 1) * this.pagination.elementsItem, this.pagination.currentPage * this.pagination.elementsItem)
+    getPull() {
+      return this.pulls.slice(
+        (this.pagination.currentPage - 1) * this.pagination.elementsItem,
+        this.pagination.currentPage * this.pagination.elementsItem
+      )
     },
     getPullWithAuthor() {
-      return value =>{
-        return this.pulls.filter(item => item.user.login === value)
+      return (value) => {
+        return this.pulls.filter((item) => item.user.login === value)
       }
     },
-    prepareAuthorsList (){
-      return unique(this.pulls.map(item => ({author: item.user.login})))
+    prepareAuthorsList() {
+      return unique(this.pulls.map((item) => ({ author: item.user.login })))
     }
-
   },
-  methods:{
-    formatDay(value){
-     const day = (new Date() - new Date(value))/8.64e+7
-      if ( day < 1 ){
+  methods: {
+    formatDay(value) {
+      const day = (new Date() - new Date(value)) / 8.64e7
+      if (day < 1) {
         return 1
       } else {
         return day.toFixed(0)
       }
     },
-    useFilter(){
-      if ( this.useAuthor === 'author' ){
+    useFilter() {
+      if (this.useAuthor === 'author') {
         this.filter = false
       } else this.filter = true
     },
-    changePage(value){
-      if ( value === 'next' ){
-        if ( this.pagination.currentPage === this.pagination.endPage ){
+    changePage(value) {
+      if (value === 'next') {
+        if (this.pagination.currentPage === this.pagination.endPage) {
           this.pagination.currentPage = this.pagination.endPage
         } else {
           this.pagination.currentPage++
         }
-      } else if ( value === 'prev' ){
-        if ( this.pagination.currentPage === this.pagination.startPage ){
+      } else if (value === 'prev') {
+        if (this.pagination.currentPage === this.pagination.startPage) {
           this.pagination.currentPage = this.pagination.endPage
-        }else {
+        } else {
           this.pagination.currentPage--
         }
-      }else {
+      } else {
         this.pagination.currentPage = value
       }
     }
@@ -120,22 +125,22 @@ export default {
     this.authors = this.prepareAuthorsList
     this.pagination.endPage = this.getPages
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
-.list-pull{
+.list-pull {
   width: 100%;
   background: #fff;
   padding: 20px;
   box-sizing: border-box;
-  &_item{
+  &_item {
     display: flex;
     width: 100%;
-    border-bottom: rgba(0,0,0, .4) 1px solid;
+    border-bottom: rgba(0, 0, 0, 0.4) 1px solid;
     justify-content: space-between;
     align-items: center;
-    div{
+    div {
       width: 20%;
       padding: 15px;
       box-sizing: border-box;
@@ -146,23 +151,23 @@ export default {
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      overflow-y: scroll ;
+      overflow-y: scroll;
     }
-    div:nth-child(1n){
-      border-right: rgba(0,0,0, .4) 1px solid;
+    div:nth-child(1n) {
+      border-right: rgba(0, 0, 0, 0.4) 1px solid;
     }
-    div:last-child{
+    div:last-child {
       border-right: none;
     }
   }
-  &_head{
+  &_head {
     display: flex;
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    border-bottom: rgba(0,0,0, .4) 1px solid;
+    border-bottom: rgba(0, 0, 0, 0.4) 1px solid;
     box-sizing: border-box;
-    div{
+    div {
       padding: 20px;
       width: 20%;
       box-sizing: border-box;
@@ -171,17 +176,17 @@ export default {
       font-style: italic;
       flex-grow: 1;
     }
-    div:nth-child(1n){
-      border-right: rgba(0,0,0, .4) 1px solid;
+    div:nth-child(1n) {
+      border-right: rgba(0, 0, 0, 0.4) 1px solid;
     }
-    div:last-child{
+    div:last-child {
       border-right: none;
     }
-    div:nth-child(4){
-      border-left: rgba(0,0,0, .4) 1px solid;
+    div:nth-child(4) {
+      border-left: rgba(0, 0, 0, 0.4) 1px solid;
     }
   }
-  &_button{
+  &_button {
     border: none;
     width: 150px;
     height: 30px;
@@ -192,18 +197,18 @@ export default {
     line-height: 20px;
     border-radius: 10px;
     cursor: pointer;
-    transition-duration: .4s;
+    transition-duration: 0.4s;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    &:hover{
+    &:hover {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       color: black;
     }
   }
-  .author{
+  .author {
     width: 19.95%;
     font-size: 17px;
     font-style: italic;

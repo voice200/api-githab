@@ -3,11 +3,18 @@
     <div class="workflow_title">Workflow</div>
     <InputAutocomplete :changeDisable="changeDisable" />
     <div class="buttons">
-      <button class="workflow_button" @click="getData" :disabled="disable" :class="{'disable-button': disable}">Use It</button>
-      <button class="workflow_button" @click="clearState" >New Search</button>
+      <button
+        class="workflow_button"
+        @click="getData"
+        :disabled="disable"
+        :class="{ 'disable-button': disable }"
+      >
+        Use It
+      </button>
+      <button class="workflow_button" @click="clearState">New Search</button>
     </div>
 
-    <AppSelect :items="getBranches" defaultValue="master"/>
+    <AppSelect :items="getBranches" defaultValue="master" />
     <div class="workflow_interval">
       <div class="workflow_interval_title">Choose Interval:</div>
       <div class="date-interval">
@@ -94,7 +101,7 @@
     <button
       class="workflow_button"
       :disabled="disableAllData"
-      :class="{'disable-button': disableAllData}"
+      :class="{ 'disable-button': disableAllData }"
       @click="getAllDataSearch"
     >
       Choose
@@ -102,28 +109,66 @@
     <div class="workflow_result" v-if="result">
       <div class="workflow_result_title">Result</div>
       <div class="workflow_result_sub-title">Members</div>
-      <Members/>
+      <Members />
       <div class="workflow_pulls">
         <div>
           <div class="pull">
-            <div class="title" ><span class="name-pull">Active PR: </span> {{ getActivePR.length }}</div>
-            <button class="workflow_button-more" @click="changeVisible('showActive')" v-if="getActivePR.length">{{ !this.showActive ? 'More' : 'Hide' }}</button>
+            <div class="title">
+              <span class="name-pull">Active PR: </span>
+              {{ getActivePR.length }}
+            </div>
+            <button
+              class="workflow_button-more"
+              @click="changeVisible('showActive')"
+              v-if="getActivePR.length"
+            >
+              {{ !this.showActive ? 'More' : 'Hide' }}
+            </button>
           </div>
-          <list-pulls title="Active PR" :pulls="getActivePR" v-show="showActive"/>
+          <list-pulls
+            title="Active PR"
+            :pulls="getActivePR"
+            v-show="showActive"
+          />
         </div>
         <div>
           <div class="pull">
-            <div class="title" ><span class="name-pull">Closed PR:</span> {{ getClosedPR.length }} </div>
-            <button class="workflow_button-more" @click="changeVisible('showClosed')" v-if="getClosedPR.length">{{ !this.showClosed ? 'More' : 'Hide' }}</button>
+            <div class="title">
+              <span class="name-pull">Closed PR:</span> {{ getClosedPR.length }}
+            </div>
+            <button
+              class="workflow_button-more"
+              @click="changeVisible('showClosed')"
+              v-if="getClosedPR.length"
+            >
+              {{ !this.showClosed ? 'More' : 'Hide' }}
+            </button>
           </div>
-          <list-pulls title="Closed PR" :pulls="getClosedPR" v-show="showClosed"/>
+          <list-pulls
+            title="Closed PR"
+            :pulls="getClosedPR"
+            v-show="showClosed"
+          />
         </div>
         <div>
           <div class="pull">
-            <div class="title"><span class="name-pull">Old PR:</span> {{ getOldPR.length }}</div>
-            <button class="workflow_button-more" @click="changeVisible('showOld')" v-if="getOldPR.length">{{ !this.showOld ? 'More' : 'Hide' }}</button>
+            <div class="title">
+              <span class="name-pull">Old PR:</span> {{ getOldPR.length }}
+            </div>
+            <button
+              class="workflow_button-more"
+              @click="changeVisible('showOld')"
+              v-if="getOldPR.length"
+            >
+              {{ !this.showOld ? 'More' : 'Hide' }}
+            </button>
           </div>
-          <list-pulls title="Old PR" :pulls="getOldPR" v-show="showOld" :old="true"/>
+          <list-pulls
+            title="Old PR"
+            :pulls="getOldPR"
+            v-show="showOld"
+            :old="true"
+          />
         </div>
       </div>
     </div>
@@ -135,8 +180,8 @@ import InputAutocomplete from '@/components/InputAutocomplete'
 import AppSelect from '@/components/AppSelect'
 import { handlerEvent } from '@/handlerEvent'
 import { formatDate, getCalendar } from '@/utils/utils'
-import Members from "@/components/Members";
-import ListPulls from "@/components/listPulls";
+import Members from '@/components/Members'
+import ListPulls from '@/components/listPulls'
 
 export default {
   name: 'workflow',
@@ -161,7 +206,7 @@ export default {
       yearItems: getCalendar('year'),
       showActive: false,
       showClosed: false,
-      showOld: false,
+      showOld: false
     }
   },
   computed: {
@@ -191,24 +236,24 @@ export default {
     changeVisible(value) {
       this[value] = !this[value]
     },
-    closeComplete(){
+    closeComplete() {
       handlerEvent.$emit('closeauto')
     },
-    clearState(){
+    clearState() {
       this.$store.dispatch('clearState')
       this.disable = true
       this.disableAllData = true
       this.dateStartUser = {
         day: '',
-          month: '',
-          year: ''
+        month: '',
+        year: ''
       }
-      this.dateEndUser = {
+      ;(this.dateEndUser = {
         day: '',
-          month: '',
-          year: ''
-      },
-      this.result = false
+        month: '',
+        year: ''
+      }),
+        (this.result = false)
       this.showActive = false
       this.showClosed = false
       this.showOld = false
@@ -216,7 +261,7 @@ export default {
     },
     getData() {
       this.$store.dispatch('setRepository').then(() => {
-        if ( this.getRepo?.id ){
+        if (this.getRepo?.id) {
           const { dateStart, dateEnd } = this.$store.getters.getSearch
           this.dateStartUser.year = new Date(dateStart).getFullYear()
           this.dateStartUser.month = +new Date(dateStart).getMonth() + 1
@@ -224,7 +269,7 @@ export default {
           this.dateEndUser.year = new Date(dateEnd).getFullYear()
           this.dateEndUser.month = +new Date(dateEnd).getMonth() + 1
           this.dateEndUser.day = new Date(dateEnd).getDate()
-          this.$store.dispatch('setBranches').then(()=>{
+          this.$store.dispatch('setBranches').then(() => {
             this.disableAllData = false
           })
         }
@@ -258,8 +303,7 @@ export default {
         })
     }
   },
-  mounted() {
-  }
+  mounted() {}
 }
 </script>
 
@@ -279,24 +323,24 @@ export default {
   }
 }
 .workflow {
-  &_interval{
+  &_interval {
     display: flex;
     width: 100%;
     margin-bottom: 30px;
-    &_title{
+    &_title {
       margin-right: 30px;
       font-size: 20px;
     }
-    select{
+    select {
       width: 50px;
       height: 30px;
       margin-right: 10px;
     }
-    .year{
+    .year {
       width: 100px;
     }
   }
-  .data-start{
+  .data-start {
     margin-bottom: 20px;
   }
   &_container {
@@ -314,16 +358,16 @@ export default {
     border-radius: 10px;
     cursor: pointer;
     border: none;
-    transition-duration: .4s;
-    &:hover{
+    transition-duration: 0.4s;
+    &:hover {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
     margin-bottom: 20px;
   }
-  .center{
+  .center {
     align-self: center;
   }
-  &_title{
+  &_title {
     font-size: 25px;
     font-weight: 900;
     margin-bottom: 40px;
@@ -336,42 +380,41 @@ export default {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    &_title{
+    &_title {
       font-size: 25px;
       font-weight: bold;
       margin-bottom: 30px;
-
     }
-    &_sub-title{
+    &_sub-title {
       font-weight: bold;
       font-size: 22px;
       margin-bottom: 20px;
     }
   }
-  &_pulls{
+  &_pulls {
     align-self: flex-start;
     width: 100%;
-    .pull{
+    .pull {
       display: flex;
       margin-bottom: 15px;
       margin-top: 15px;
-      border-bottom: 1px solid rgba(0,0,0, .2);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
       width: 100%;
       padding: 15px;
-      div:nth-child(1){
+      div:nth-child(1) {
         margin-right: 30px;
       }
-      .title{
+      .title {
         font-size: 18px;
         font-weight: bold;
-        .name-pull{
+        .name-pull {
           margin-right: 10px;
         }
       }
     }
   }
-  &_button-more{
-   border: none;
+  &_button-more {
+    border: none;
     width: 100px;
     height: 30px;
     background: #fcce0d;
@@ -382,13 +425,13 @@ export default {
     font-weight: 800;
     border-radius: 10px;
     cursor: pointer;
-    transition-duration: .4s;
-    &:hover{
+    transition-duration: 0.4s;
+    &:hover {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
   }
 }
-.buttons{
+.buttons {
   display: flex;
   justify-content: space-between;
   align-items: center;
