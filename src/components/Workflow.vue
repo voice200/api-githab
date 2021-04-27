@@ -1,14 +1,19 @@
 <template>
-  <div class="workflow_container">
+  <div class="workflow_container" @click="closeComplete">
     <div class="workflow_title">Workflow</div>
     <InputAutocomplete :changeDisable="changeDisable" />
-    <button class="workflow_button" @click="getData" :disabled="disable">Use It</button>
-    <AppSelect :items="getBranches" defaultValue="master" />
+    <div class="buttons">
+      <button class="workflow_button" @click="getData" :disabled="disable" :class="{'disable-button': disable}">Use It</button>
+      <button class="workflow_button" @click="clearState" >New Search</button>
+    </div>
+
+    <AppSelect :items="getBranches" defaultValue="master"/>
     <div class="workflow_interval">
       <div class="workflow_interval_title">Choose Interval:</div>
       <div class="date-interval">
         <div class="date-start">
           <select
+            @change="changeDate"
             name="dayStart"
             id="dayStart"
             :disabled="!getBranches.length"
@@ -19,6 +24,7 @@
             </option>
           </select>
           <select
+            @change="changeDate"
             name="monthStart"
             id="monthStart"
             :disabled="!getBranches.length"
@@ -34,6 +40,7 @@
             </option>
           </select>
           <select
+            @change="changeDate"
             class="year"
             name="yearStart"
             id="yearStart"
@@ -47,6 +54,7 @@
         </div>
         <div class="date-end">
           <select
+            @change="changeDate"
             name="dayEnd"
             id="dayEnd"
             :disabled="!getBranches.length"
@@ -57,6 +65,7 @@
             </option>
           </select>
           <select
+            @change="changeDate"
             name="monthEnd"
             id="monthEnd"
             :disabled="!getBranches.length"
@@ -67,6 +76,7 @@
             </option>
           </select>
           <select
+            @change="changeDate"
             name="yearEnd"
             class="year"
             id="yearEnd"
@@ -80,39 +90,39 @@
         </div>
       </div>
     </div>
-    <button
-      class="workflow_button"
-      :disabled="!getBranches.length"
-      @click="changeDate"
-    >
-      Save Date
-    </button>
     <hr />
     <button
       class="workflow_button"
       :disabled="disableAllData"
+      :class="{'disable-button': disableAllData}"
       @click="getAllDataSearch"
     >
       Choose
     </button>
     <div class="workflow_result" v-if="result">
       <div class="workflow_result_title">Result</div>
-      <div>Members</div>
+      <div class="workflow_result_sub-title">Members</div>
       <Members/>
       <div class="workflow_pulls">
         <div>
-          <div>Active PR: {{ getActivePR.length }}</div>
-          <button @click="changeVisible('showActive')" v-if="getActivePR.length">{{ !this.showActive ? 'More' : 'Hide' }}</button>
-          <list-pulls title="Active PR" :pulls="getActivePR" v-show="showActive" :old="true"/>
+          <div class="pull">
+            <div class="title" ><span class="name-pull">Active PR: </span> {{ getActivePR.length }}</div>
+            <button class="workflow_button-more" @click="changeVisible('showActive')" v-if="getActivePR.length">{{ !this.showActive ? 'More' : 'Hide' }}</button>
+          </div>
+          <list-pulls title="Active PR" :pulls="getActivePR" v-show="showActive"/>
         </div>
         <div>
-          <div>Closed PR: {{ getClosedPR.length }} </div>
-          <button @click="changeVisible('showClosed')" v-if="getClosedPR.length">{{ !this.showClosed ? 'More' : 'Hide' }}</button>
+          <div class="pull">
+            <div class="title" ><span class="name-pull">Closed PR:</span> {{ getClosedPR.length }} </div>
+            <button class="workflow_button-more" @click="changeVisible('showClosed')" v-if="getClosedPR.length">{{ !this.showClosed ? 'More' : 'Hide' }}</button>
+          </div>
           <list-pulls title="Closed PR" :pulls="getClosedPR" v-show="showClosed"/>
         </div>
         <div>
-          <div>Old PR: {{ getOldPR.length }}</div>
-          <button @click="changeVisible('showOld')" v-if="getOldPR.length">{{ !this.showOld ? 'More' : 'Hide' }}</button>
+          <div class="pull">
+            <div class="title"><span class="name-pull">Old PR:</span> {{ getOldPR.length }}</div>
+            <button class="workflow_button-more" @click="changeVisible('showOld')" v-if="getOldPR.length">{{ !this.showOld ? 'More' : 'Hide' }}</button>
+          </div>
           <list-pulls title="Old PR" :pulls="getOldPR" v-show="showOld" :old="true"/>
         </div>
       </div>
@@ -169,36 +179,59 @@ export default {
     },
     getClosedPR() {
       return this.$store.getters.getClosedPR
+    },
+    getRepo() {
+      return this.$store.getters.getRepo
     }
   },
   methods: {
     changeDisable(value) {
       this.disable = value
-      console.log('disable', value)
     },
     changeVisible(value) {
       this[value] = !this[value]
     },
+    closeComplete(){
+      handlerEvent.$emit('closeauto')
+    },
+    clearState(){
+      this.$store.dispatch('clearState')
+      this.disable = true
+      this.disableAllData = true
+      this.dateStartUser = {
+        day: '',
+          month: '',
+          year: ''
+      }
+      this.dateEndUser = {
+        day: '',
+          month: '',
+          year: ''
+      },
+      this.result = false
+      this.showActive = false
+      this.showClosed = false
+      this.showOld = false
+      handlerEvent.$emit('clearstate')
+    },
     getData() {
       this.$store.dispatch('setRepository').then(() => {
-        const { dateStart, dateEnd } = this.$store.getters.getSearch
-        this.dateStartUser.year = new Date(dateStart).getFullYear()
-        this.dateStartUser.month = +new Date(dateStart).getMonth() + 1
-        this.dateStartUser.day = new Date(dateStart).getDate()
-        this.dateEndUser.year = new Date(dateEnd).getFullYear()
-        this.dateEndUser.month = +new Date(dateEnd).getMonth() + 1
-        this.dateEndUser.day = new Date(dateEnd).getDate()
-        this.$store.dispatch('setBranches').then(()=>{
-        })
-      }).catch(()=>{
-          console.log('нет данных')
+        if ( this.getRepo?.id ){
+          const { dateStart, dateEnd } = this.$store.getters.getSearch
+          this.dateStartUser.year = new Date(dateStart).getFullYear()
+          this.dateStartUser.month = +new Date(dateStart).getMonth() + 1
+          this.dateStartUser.day = new Date(dateStart).getDate()
+          this.dateEndUser.year = new Date(dateEnd).getFullYear()
+          this.dateEndUser.month = +new Date(dateEnd).getMonth() + 1
+          this.dateEndUser.day = new Date(dateEnd).getDate()
+          this.$store.dispatch('setBranches').then(()=>{
+            this.disableAllData = false
+          })
+        }
       })
     },
     getAllDataSearch() {
       this.result = true
-    },
-    disableButton() {
-      this.disableAllData = false
     },
     changeDate() {
       const startDate = Object.entries(this.dateStartUser)
@@ -226,12 +259,25 @@ export default {
     }
   },
   mounted() {
-    handlerEvent.$on('choicedone', this.disableButton)
   }
 }
 </script>
 
 <style scoped lang="scss">
+@media screen and (min-width: 601px) {
+  .workflow_container {
+    height: 100%;
+    margin: 0;
+    padding: 50px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .workflow_container {
+    height: 100%;
+    margin: 0;
+    padding: 20px;
+  }
+}
 .workflow {
   &_interval{
     display: flex;
@@ -254,12 +300,11 @@ export default {
     margin-bottom: 20px;
   }
   &_container {
-    padding: 50px;
     background: #f7f3eb;
   }
   &_button {
     width: 200px;
-    height: 40px;
+    height: 50px;
     background: #fcce0d;
     color: black;
     text-align: center;
@@ -267,10 +312,11 @@ export default {
     line-height: 40px;
     font-weight: 800;
     border-radius: 10px;
-    align-self: center;
     cursor: pointer;
+    border: none;
+    transition-duration: .4s;
     &:hover{
-      background: #d9b219;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
     margin-bottom: 20px;
   }
@@ -289,11 +335,63 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
     &_title{
       font-size: 25px;
       font-weight: bold;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
+
+    }
+    &_sub-title{
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 20px;
     }
   }
+  &_pulls{
+    align-self: flex-start;
+    width: 100%;
+    .pull{
+      display: flex;
+      margin-bottom: 15px;
+      margin-top: 15px;
+      border-bottom: 1px solid rgba(0,0,0, .2);
+      width: 100%;
+      padding: 15px;
+      div:nth-child(1){
+        margin-right: 30px;
+      }
+      .title{
+        font-size: 18px;
+        font-weight: bold;
+        .name-pull{
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+  &_button-more{
+   border: none;
+    width: 100px;
+    height: 30px;
+    background: #fcce0d;
+    color: black;
+    text-align: center;
+    font-size: 18px;
+    line-height: 20px;
+    font-weight: 800;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-duration: .4s;
+    &:hover{
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+.buttons{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 </style>

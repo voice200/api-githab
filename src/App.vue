@@ -17,6 +17,10 @@ body {
   margin: 0 auto;
   padding: 0;
 }
+.disable-button{
+  opacity: .6;
+  pointer-events: none;
+}
 </style>
 <script>
 import Navbar from '@/components/Navbar'

@@ -1,4 +1,4 @@
-import { getBranches, getPulls, getRepo, getCommits } from "@/request";
+import { getBranches, getPulls, getRepo, getCommits, getUsers, getOrganizations, getRepos } from "@/request";
 import { formatDate } from '@/utils/utils'
 export default {
   state: {
@@ -16,13 +16,13 @@ export default {
       active: [],
       closed: [],
       old:[]
-    }
+    },
+    users:[],
+    repositories: []
   },
   mutations: {
     setSearch(state, payload) {
-      console.log('payload', payload)
       state.search = { ...state.search, ...payload }
-      console.log('state.search', state.search)
     },
     setBranches(state, payload) {
       state.branches = payload
@@ -32,24 +32,48 @@ export default {
     },
     setPullsActive(state, payload) {
       state.pullRequests.active = payload
-      console.log('pulls', payload)
     },
     setPullsClosed(state, payload) {
       state.pullRequests.closed = payload
-      console.log('pulls', payload)
     },
     setPullsOld(state, payload) {
       state.pullRequests.old = payload
-      console.log('pullsOld', payload)
     },
     setCommits(state, payload) {
       state.commits = payload
-      console.log('commits', payload)
+    },
+    setRepositories(state, payload) {
+      state.repositories = payload
+    },
+    setUsers(state, payload) {
+      state.users = payload
+    },
+    clearState(state){
+      state.search = {
+        dateStart: null,
+        dateEnd: null,
+        repo: null,
+        owner: null,
+        branch: 'master'
+      }
+      state.branches = []
+      state.commits = []
+      state.repository = {}
+      state.pullRequests = {
+        active: [],
+          closed: [],
+          old:[]
+      }
+      state.users = []
+      state.repositories = []
     }
   },
   actions: {
     setSearch({ commit }, payload) {
       commit('setSearch', payload)
+    },
+    clearState({ commit }) {
+      commit('clearState')
     },
     async setBranches({ commit }) {
       commit('clearError')
@@ -72,13 +96,46 @@ export default {
       const { accessToken: token } = this.state.user.user
       try {
         const repository = await getRepo(owner, repo, token)
-        commit('setRepository', repository)
-        commit('setLoading', false)
-        commit('setSearch', {
-          dateStart: formatDate(repository.created_at),
-          dateEnd: formatDate()
-        })
+        if ( repository.message === 'Not Found' ){
+          console.log('error', repository.message )
+        }else {
+          commit('setRepository', repository)
+          commit('setLoading', false)
+          commit('setSearch', {
+            dateStart: formatDate(repository.created_at),
+            dateEnd: formatDate()
+          })
+        }
       } catch (e) {
+        commit('setLoading', false)
+        commit('setError', e.message)
+      }
+    },
+    async setAutocomplete({commit}){
+      commit('clearError')
+      commit('setLoading', true)
+      const { accessToken: token } = this.state.user.user
+      try {
+        const users = await getUsers(token)
+        const organizations = await getOrganizations(token)
+
+        commit('setUsers', [...users.map(item => item.login), ...organizations.map(item => item.login)])
+      }
+      catch ( e ) {
+        commit('setLoading', false)
+        commit('setError', e.message)
+      }
+    },
+    async setRepos({commit}){
+      commit('clearError')
+      commit('setLoading', true)
+      const { owner } = this.state.repo.search
+      const { accessToken: token } = this.state.user.user
+      try {
+        const repositories = await getRepos(owner,token)
+        commit('setRepositories', repositories.map(item => item.name))
+      }
+      catch ( e ) {
         commit('setLoading', false)
         commit('setError', e.message)
       }
@@ -129,6 +186,9 @@ export default {
     getBranches(state) {
       return state.branches
     },
+    getRepo(state) {
+      return state.repository
+    },
     getSearch(state) {
       return state.search
     },
@@ -143,6 +203,12 @@ export default {
     },
     getCommits(state) {
       return state.commits
+    },
+    getUsers(state) {
+      return state.users
+    },
+    getRepos(state) {
+      return state.repositories
     }
   }
 }

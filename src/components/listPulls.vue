@@ -1,21 +1,20 @@
 <template>
 <div class="list-pull">
-  <div>{{ title }}</div>
   <div class="list-pull_head">
     <div>Name</div>
     <div>Date Create</div>
     <div v-if="!old">Author</div>
-    <select @change="useFilter" v-if="old" v-model="useAuthor">
-      <option value="author" selected>Author</option>
-      <option
-               :value="item.author"
-               v-for="(item, i) in authors"
-               :key="i">
-        {{ item.author }}
-      </option>
-    </select>
+      <select @change="useFilter" class="author" v-if="old" v-model="useAuthor">
+        <option value="author" selected>Author</option>
+        <option
+          :value="item.author"
+          v-for="(item, i) in authors"
+          :key="i">
+          {{ item.author }}
+        </option>
+      </select>
     <div v-if="old">Days Open</div>
-    <div>Go to githab</div>
+    <div>Go To Githab</div>
   </div>
   <div class="list-pull_item"
   v-for="(pull, i) in !filter ? getPull : getPullWithAuthor(useAuthor)"
@@ -24,9 +23,11 @@
     <div>{{ formatDatePull(pull.created_at) }}</div>
     <div>{{ pull.user.login }}</div>
     <div v-if="old">{{ formatDay(pull.created_at) }}</div>
-    <a :href="pull.html_url" target="_blank">Go to githab</a>
+    <div>
+      <a class="list-pull_button" :href="pull.html_url" target="_blank">Go</a>
+    </div>
   </div>
-  <PaginationBlock :pages="getPages" :changePage="changePage" v-if="!filter"/>
+  <PaginationBlock :pages="getPages" :changePage="changePage" v-if="!filter" :currentPage="pagination.currentPage"/>
 
 </div>
 </template>
@@ -115,23 +116,98 @@ export default {
       }
     }
   },
-  updated() {
-    this.pagination.endPage = this.getPages
+  mounted() {
     this.authors = this.prepareAuthorsList
-    console.log('this.authors', this.authors)
+    this.pagination.endPage = this.getPages
   }
 };
 </script>
 
 <style scoped lang="scss">
 .list-pull{
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
   &_item{
     display: flex;
+    width: 100%;
+    border-bottom: rgba(0,0,0, .4) 1px solid;
     justify-content: space-between;
+    align-items: center;
+    div{
+      width: 20%;
+      padding: 15px;
+      box-sizing: border-box;
+      overflow: hidden;
+      flex-grow: 1;
+      min-height: 60px;
+      max-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: scroll ;
+    }
+    div:nth-child(1n){
+      border-right: rgba(0,0,0, .4) 1px solid;
+    }
+    div:last-child{
+      border-right: none;
+    }
   }
   &_head{
-   display: flex;
+    display: flex;
+    width: 100%;
     justify-content: space-between;
+    align-items: center;
+    border-bottom: rgba(0,0,0, .4) 1px solid;
+    box-sizing: border-box;
+    div{
+      padding: 20px;
+      width: 20%;
+      box-sizing: border-box;
+      font-weight: bold;
+      font-size: 17px;
+      font-style: italic;
+      flex-grow: 1;
+    }
+    div:nth-child(1n){
+      border-right: rgba(0,0,0, .4) 1px solid;
+    }
+    div:last-child{
+      border-right: none;
+    }
+    div:nth-child(4){
+      border-left: rgba(0,0,0, .4) 1px solid;
+    }
+  }
+  &_button{
+    border: none;
+    width: 150px;
+    height: 30px;
+    background: #fcce0d;
+    color: black;
+    text-align: center;
+    font-size: 18px;
+    line-height: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-duration: .4s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    &:hover{
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      color: black;
+    }
+  }
+  .author{
+    width: 19.95%;
+    font-size: 17px;
+    font-style: italic;
+    height: 30px;
   }
 }
 </style>

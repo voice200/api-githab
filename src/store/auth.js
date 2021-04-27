@@ -43,16 +43,10 @@ export default {
     },
     async loginFromGithub({ commit }) {
       const stateGenerate = localStorage.getItem('state')
-      console.log(
-        'this.state.stateUrl',
-        this.state.auth.stateUrl,
-        this.state.auth.code
-      )
       if (this.state.auth.stateUrl && this.state.auth.code) {
         if (stateGenerate === this.state.auth.stateUrl) {
           commit('clearError')
           commit('setLoading', true)
-          localStorage.setItem('code_client', this.state.auth.code)
           try {
             const { access_token } = await getToken(this.state.auth.code)
             localStorage.setItem('access_token', access_token)
@@ -64,13 +58,10 @@ export default {
             commit('setLoading', false)
             commit('setError', e.message)
           }
-          console.log('все хорошо')
         } else {
           localStorage.removeItem('state')
           commit('setError', 'invalid state, try again later')
         }
-      } else {
-        console.log('не было попытки входа')
       }
     }
   },

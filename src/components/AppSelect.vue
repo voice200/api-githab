@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import { handlerEvent } from '@/handlerEvent'
 export default {
   props: {
     items: { type: Array },
@@ -38,7 +37,6 @@ export default {
         this.$store.dispatch('setPulls')
         this.$store.dispatch('setCommits')
       })
-      handlerEvent.$emit('choicedone')
     }
   },
   computed: {

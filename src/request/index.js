@@ -122,7 +122,7 @@ export const getRepos = async (owner, token) => {
   const url = `http://localhost:8080/api/users/${owner}/repos`
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
-  headers.append('Accept', 'application/json')
+  headers.append('Accept', 'application/vnd.github.v3+json')
   headers.append('Authorization', `Bearer ${token}`)
   const requestOptions = {
     method: 'GET',
@@ -136,9 +136,9 @@ export const getRepos = async (owner, token) => {
   }
 }
 export const getUsers = async (token) => {
-  const url = `http://localhost:8080/api/users`
+  const url = `http://localhost:8080/api/users?per_page=100`
   const headers = new Headers()
-  headers.append('Content-Type', 'application/json')
+  headers.append('Content-Type', 'application/vnd.github.v3+json')
   headers.append('Accept', 'application/json')
   headers.append('Authorization', `Bearer ${token}`)
   const requestOptions = {
@@ -153,10 +153,10 @@ export const getUsers = async (token) => {
   }
 }
 export const getOrganizations = async (token) => {
-  const url = `http://localhost:8080/api/organizations`
+  const url = `http://localhost:8080/api/organizations?per_page=100`
   const headers = new Headers()
   headers.append('Content-Type', 'application/json')
-  headers.append('Accept', 'application/json')
+  headers.append('Accept', 'application/vnd.github.v3+json')
   headers.append('Authorization', `Bearer ${token}`)
   const requestOptions = {
     method: 'GET',

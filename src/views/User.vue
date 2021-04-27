@@ -12,9 +12,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.user {
-  border: 1px solid gray;
-}
 @media screen and (max-width: 1199px) {
   .user {
     //width: 100%;
@@ -28,6 +25,14 @@ export default {
     width: 1200px;
     height: 100%;
     margin: 0 auto;
+  }
+}
+@media screen and (max-width: 600px) {
+  .user {
+    //width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <div class="members">
     <div class="members_filter">
-      <div @click="changeFilter('active')">Active </div>
-      <div @click="changeFilter('passive')">Passive</div>
+      <div @click="changeFilter('active')" :class="{active: filter === 'active'}">Active </div>
+      <div @click="changeFilter('passive')" :class="{active: filter === 'passive'}">Passive</div>
     </div>
 
     <div class="members_head">
-      <div>github login</div>
+      <div>Github login</div>
       <div>Number of commits</div>
     </div>
     <div class="members_item"
@@ -25,7 +25,7 @@ export default {
   components: { },
   data(){
     return {
-      filter: 'active'
+      filter: 'active',
     }
   },
   computed:{
@@ -75,7 +75,7 @@ export default {
   },
   methods:{
     changeFilter(value){
-      this.filer = value
+      this.filter = value
     }
   }
 }
@@ -83,16 +83,58 @@ export default {
 
 <style scoped lang="scss">
 .members{
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
   .members_filter{
     display: flex;
-    cursor: pointer;
+    div{
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      &:nth-child(1){
+        margin-right: 20px;
+      }
+    }
+    margin-bottom: 20px;
+  }
+  .active{
+    color: #ff5400;
   }
   &_item{
     display: flex;
+    width: 100%;
+    border-bottom: rgba(0,0,0, .4) 1px solid;
+    justify-content: space-between;
+    align-items: center;
+    div{
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    div:nth-child(1){
+      border-right: rgba(0,0,0, .4) 1px solid;
+    }
   }
-}
-.members_head{
-  display: flex;
-
+  &_head{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: rgba(0,0,0, .4) 1px solid;
+    box-sizing: border-box;
+    div{
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+      font-weight: bold;
+      font-size: 17px;
+      font-style: italic;
+    }
+    div:nth-child(1){
+      border-right: rgba(0,0,0, .4) 1px solid;
+    }
+  }
 }
 </style>
