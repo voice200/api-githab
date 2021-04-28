@@ -48,7 +48,7 @@ export default {
     prepareCommits() {
       return (value) => {
         const author = unique(
-          this.getCommits.map((item) => ({ author: item.commit.author.name }))
+          this.getCommits.map((item) => ({ author: item.commit.author.name })), 'author'
         )
         const members = []
         author.forEach(({ author }) => {
