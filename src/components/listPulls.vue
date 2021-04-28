@@ -86,7 +86,7 @@ export default {
       }
     },
     prepareAuthorsList() {
-      return unique(this.pulls.map((item) => ({ author: item.user.login })))
+      return unique(this.pulls.map((item) => ({ author: item.user.login })),'author')
     }
   },
   methods: {
